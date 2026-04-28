@@ -10,6 +10,7 @@ const roomsRouter = require('./routes/rooms');
 const bookingRequestsRouter = require('./routes/bookingRequests');
 const approvalsRouter = require('./routes/approvals');
 const bookingsRouter = require('./routes/bookings');
+const reportsRouter = require('./routes/reports');
 
 function createApp() {
   const app = express();
@@ -28,6 +29,7 @@ function createApp() {
   app.use('/api/booking-requests', bookingRequestsRouter);
   app.use('/api/approvals', approvalsRouter);
   app.use('/api/bookings', bookingsRouter);
+  app.use('/api/reports', reportsRouter);
 
   const clientPath = path.resolve(__dirname, '../../client');
   app.use(express.static(clientPath));

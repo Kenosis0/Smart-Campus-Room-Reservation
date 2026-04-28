@@ -128,9 +128,42 @@
     }
 
     try {
-      if (state.modal.selectedSlotIds.length === 0) {
-        throw new Error('Select at least one available slot.');
+      // Validate date is not in past
+      const dateValidation = window.FormValidation.validateFutureDate(state.selectedDate);
+      if (!dateValidation.valid) {
+        throw new Error(dateValidation.error);
       }
+
+      // Validate slots
+      const availability = getRoomAvailability(state.modal.roomId);
+      const slotValidation = window.FormValidation.validateConsecutiveSlots(
+        state.modal.selectedSlotIds,
+        availability.slots
+      );
+      if (!slotValidation.valid) {
+        throw new Error(slotValidation.error);
+      }
+
+      // Get room name for confirmation
+      const room = state.rooms.find(r => r.id === state.modal.roomId);
+      const slotLabels = availability.slots
+        .filter(s => state.modal.selectedSlotIds.includes(s.slotId))
+        .map(s => s.label)
+        .join(', ');
+
+      // Show confirmation dialog
+      const confirmed = await window.FormValidation.confirm(
+        'Confirm Booking Request',
+        `You are requesting ${room.name} on ${state.selectedDate} for:\n${slotLabels}\n\nThis requires approval by your department dean and booking administrator.`,
+        'Create Request'
+      );
+
+      if (!confirmed) {
+        setNotice('Booking request cancelled', 'info');
+        return;
+      }
+
+      setNotice('Creating booking request...', 'info');
 
       await window.API.request('/api/booking-requests', {
         method: 'POST',
@@ -145,9 +178,9 @@
 
       closeModal();
       await loadRoomsAndAvailability();
-      setNotice('Booking request created and queued for dean approval.', 'success');
+      setNotice('✓ Booking request created successfully. Waiting for dean approval.', 'success');
     } catch (error) {
-      setNotice(error.message, 'error');
+      setNotice(error.message || 'Failed to create booking request', 'error');
     }
   }
 

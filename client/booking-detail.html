@@ -6,24 +6,39 @@
     <title>Booking Detail</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="min-h-screen bg-slate-100 text-slate-800">
-    <header class="border-b border-slate-200 bg-white">
-      <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4">
-        <div>
-          <h1 class="text-xl font-black">Booking Detail</h1>
-          <p class="text-sm text-slate-500">Booking state, approval trail, and cancellation action</p>
+  <body class="min-h-screen bg-white text-slate-900">
+    <!-- Header -->
+    <header class="sticky top-0 z-40 border-b border-slate-100 bg-white">
+      <div class="mx-auto max-w-7xl px-6 sm:px-8 lg:px-8">
+        <div class="flex h-14 items-center justify-between">
+          <div class="text-lg font-semibold tracking-tight text-slate-900">
+            Smart Campus
+          </div>
+          <nav class="flex items-center gap-6">
+            <a href="/" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+              Availability
+            </a>
+            <a href="/request-history.html" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+              My Requests
+            </a>
+            <a href="/dean-queue.html" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+              Dean Queue
+            </a>
+            <a href="/admin-queue.html" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+              Admin Queue
+            </a>
+            <a href="/booking-detail.html" class="text-sm font-medium text-slate-900 hover:text-slate-600 transition-colors">
+              Booking Detail
+            </a>
+            <a href="/reports.html" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+              Reports
+            </a>
+          </nav>
         </div>
-        <nav class="flex flex-wrap gap-2 text-sm font-semibold">
-          <a href="/" class="rounded-md bg-white px-3 py-2 text-slate-700 ring-1 ring-slate-200">Availability</a>
-          <a href="/request-history.html" class="rounded-md bg-white px-3 py-2 text-slate-700 ring-1 ring-slate-200">My Requests</a>
-          <a href="/dean-queue.html" class="rounded-md bg-white px-3 py-2 text-slate-700 ring-1 ring-slate-200">Dean Queue</a>
-          <a href="/admin-queue.html" class="rounded-md bg-white px-3 py-2 text-slate-700 ring-1 ring-slate-200">Admin Queue</a>
-          <a href="/booking-detail.html" class="rounded-md bg-slate-900 px-3 py-2 text-white">Booking Detail</a>
-        </nav>
       </div>
     </header>
 
-    <main class="mx-auto max-w-6xl space-y-4 px-4 py-6">
+    <main class="mx-auto max-w-7xl px-6 sm:px-8 lg:px-8 py-12">
       <section class="grid gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-3 md:items-end">
         <label class="space-y-1">
           <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">Demo User</span>
@@ -35,7 +50,7 @@
           <input id="bookingIdInput" type="number" min="1" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="Example: 1" />
         </label>
 
-        <button id="loadBookingDetail" type="button" class="rounded-md bg-cyan-700 px-3 py-2 text-sm font-semibold text-white hover:bg-cyan-600">
+        <button id="loadBookingDetail" type="button" class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors">
           Load Booking
         </button>
       </section>
@@ -56,6 +71,7 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/api.js"></script>
+    <script src="/js/form-validation.js"></script>
     <script src="/js/socket-client.js"></script>
     <script src="/js/components.js"></script>
     <script src="/js/booking-detail-page.js"></script>

@@ -51,28 +51,57 @@
           const emergencyOverride = overrideCheckbox.checked;
           const overrideReason = overrideReasonInput.value.trim();
 
-          if (action === 'REJECT' && !note) {
-            setNotice('Reject requires a note.', 'error');
-            return;
+          // Validate note for rejections
+          if (action === 'REJECT') {
+            const validation = window.FormValidation.validateLength(note, 3, 500, 'Rejection reason');
+            if (!validation.valid) {
+              setNotice(validation.error, 'error');
+              return;
+            }
           }
 
-          if (action === 'APPROVE' && emergencyOverride && !overrideReason) {
-            setNotice('Override reason is required when emergency override is checked.', 'error');
-            return;
+          // Validate override reason if emergency override checked
+          if (action === 'APPROVE' && emergencyOverride) {
+            const validation = window.FormValidation.validateLength(overrideReason, 3, 500, 'Override reason');
+            if (!validation.valid) {
+              setNotice(validation.error, 'error');
+              return;
+            }
           }
 
           try {
+            // Show confirmation
+            let confirmMessage = `You are about to ${action === 'APPROVE' ? 'approve' : 'reject'} Request #${requestId}.\n`;
+            if (action === 'REJECT') {
+              confirmMessage += `\nReason: ${note}`;
+            } else if (emergencyOverride) {
+              confirmMessage += `\nThis will apply an emergency override.\nReason: ${overrideReason}`;
+            }
+
+            const confirmed = await window.FormValidation.confirm(
+              `${action === 'APPROVE' ? 'Approve' : 'Reject'} Request #${requestId}`,
+              confirmMessage,
+              action === 'APPROVE' ? 'Approve Request' : 'Reject Request'
+            );
+
+            if (!confirmed) {
+              setNotice('Action cancelled', 'info');
+              return;
+            }
+
+            setNotice(`${action === 'APPROVE' ? 'Approving' : 'Rejecting'} request...`, 'info');
+
             await window.API.request(`/api/booking-requests/${requestId}/approvals`, {
               method: 'POST',
               body: {
                 decision: action,
-                note,
+                note: action === 'REJECT' ? note : undefined,
                 emergencyOverride,
-                overrideReason
+                overrideReason: emergencyOverride ? overrideReason : undefined
               }
             });
 
-            setNotice(`Request #${requestId} ${action === 'APPROVE' ? 'processed' : 'rejected'}.`, 'success');
+            setNotice(`✓ Request #${requestId} ${action === 'APPROVE' ? 'processed successfully' : 'rejected'}.`, 'success');
             await loadQueue();
           } catch (error) {
             setNotice(error.message, 'error');

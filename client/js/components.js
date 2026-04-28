@@ -48,12 +48,12 @@
     const pendingCount = availability.slots.filter((slot) => slot.status === 'PENDING').length;
 
     return `
-      <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div class="mb-3 flex items-start justify-between gap-3">
+      <article class="rounded-lg border border-slate-200 bg-white p-6 hover:border-slate-300 transition-colors">
+        <div class="mb-4 flex items-start justify-between gap-3">
           <div>
-            <h3 class="text-lg font-bold text-slate-800">${escapeHtml(room.name)}</h3>
-            <p class="text-sm text-slate-500">${escapeHtml(room.building)} · ${room.capacity} seats</p>
-            <p class="mt-1 text-xs uppercase tracking-wide text-slate-400">${escapeHtml(room.department.name)}</p>
+            <h3 class="text-base font-semibold text-slate-900">${escapeHtml(room.name)}</h3>
+            <p class="text-sm text-slate-600">${escapeHtml(room.building)} · ${room.capacity} seats</p>
+            <p class="mt-1 text-xs text-slate-500">${escapeHtml(room.department.name)}</p>
           </div>
           ${getStatusChip(confirmedCount > 0 ? 'CONFIRMED' : pendingCount > 0 ? 'PENDING' : 'AVAILABLE', pendingCount > 0 ? 'YELLOW' : null)}
         </div>
@@ -62,7 +62,7 @@
           ${availability.slots.map((slot) => getSlotBadge(slot)).join('')}
         </div>
 
-        <div class="flex items-center justify-between text-xs text-slate-500">
+        <div class="flex items-center justify-between text-xs text-slate-500 mb-4">
           <span>Confirmed: ${confirmedCount}</span>
           <span>Pending: ${pendingCount}</span>
         </div>
@@ -70,9 +70,9 @@
         <button
           type="button"
           data-room-id="${room.id}"
-          class="mt-4 w-full rounded-lg bg-slate-900 px-3 py-2 text-sm font-semibold text-white hover:bg-slate-700"
+          class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors"
         >
-          Create Booking Request
+          Request Booking
         </button>
       </article>
     `;

@@ -82,19 +82,41 @@
       return;
     }
 
+    // Validate reason
     const reason = elements.cancelReason.value.trim();
-    if (!reason) {
-      setNotice('Cancellation reason is required.', 'error');
+    const validation = window.FormValidation.validateLength(reason, 3, 500, 'Cancellation reason');
+    if (!validation.valid) {
+      setNotice(validation.error, 'error');
+      window.FormValidation.showFieldError(elements.cancelReason, validation.error);
+      return;
+    }
+    window.FormValidation.clearFieldError(elements.cancelReason);
+
+    // Show confirmation
+    const confirmed = await window.FormValidation.confirm(
+      'Confirm Cancellation',
+      `You are about to cancel this booking. This action cannot be undone.\n\nReason: ${reason}`,
+      'Yes, Cancel Booking'
+    );
+
+    if (!confirmed) {
+      setNotice('Cancellation cancelled', 'info');
       return;
     }
 
-    await window.API.request(`/api/bookings/${activeBookingId}/cancel`, {
-      method: 'POST',
-      body: { reason }
-    });
+    try {
+      setNotice('Cancelling booking...', 'info');
 
-    setNotice('Booking cancelled.', 'success');
-    await loadDetail();
+      await window.API.request(`/api/bookings/${activeBookingId}/cancel`, {
+        method: 'POST',
+        body: { reason }
+      });
+
+      setNotice('✓ Booking cancelled successfully. Time slots are now available.', 'success');
+      await loadDetail();
+    } catch (error) {
+      setNotice(error.message || 'Failed to cancel booking', 'error');
+    }
   }
 
   function bindRealtime() {

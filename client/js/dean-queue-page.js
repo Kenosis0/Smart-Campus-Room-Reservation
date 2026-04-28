@@ -39,21 +39,40 @@
           const action = button.dataset.action;
           const note = noteInput.value.trim();
 
-          if (action === 'REJECT' && !note) {
-            setNotice('Reject requires a note.', 'error');
-            return;
+          // Validate note for rejections
+          if (action === 'REJECT') {
+            const validation = window.FormValidation.validateLength(note, 3, 500, 'Rejection reason');
+            if (!validation.valid) {
+              setNotice(validation.error, 'error');
+              return;
+            }
           }
 
           try {
+            // Show confirmation
+            const roomName = card.querySelector('[data-note]').parentElement.querySelector('p:nth-child(3)').textContent;
+            const confirmed = await window.FormValidation.confirm(
+              `${action === 'APPROVE' ? 'Approve' : 'Reject'} Request #${requestId}`,
+              `You are about to ${action === 'APPROVE' ? 'approve' : 'reject'} this booking request.\n\n${action === 'REJECT' ? 'Reason: ' + note : 'This will move the request to admin review.'}`,
+              action === 'APPROVE' ? 'Approve Request' : 'Reject Request'
+            );
+
+            if (!confirmed) {
+              setNotice('Action cancelled', 'info');
+              return;
+            }
+
+            setNotice(`${action === 'APPROVE' ? 'Approving' : 'Rejecting'} request...`, 'info');
+
             await window.API.request(`/api/booking-requests/${requestId}/approvals`, {
               method: 'POST',
               body: {
                 decision: action,
-                note
+                note: action === 'REJECT' ? note : undefined
               }
             });
 
-            setNotice(`Request #${requestId} ${action === 'APPROVE' ? 'approved' : 'rejected'}.`, 'success');
+            setNotice(`✓ Request #${requestId} ${action === 'APPROVE' ? 'approved' : 'rejected'} successfully.`, 'success');
             await loadQueue();
           } catch (error) {
             setNotice(error.message, 'error');
